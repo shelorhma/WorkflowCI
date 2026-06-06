@@ -1,0 +1,17 @@
+name: Telco_Churn_Project
+
+conda_env: conda.yaml
+
+entry_points:
+  main:
+    command: "python modelling.py"
+
+FROM python:3.12-slim
+
+WORKDIR /app
+
+COPY . .
+
+RUN pip install pandas scikit-learn mlflow joblib
+
+CMD ["python","modelling.py"]
