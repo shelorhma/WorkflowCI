@@ -1,14 +1,11 @@
 import pandas as pd
 import mlflow
 import mlflow.sklearn
+import joblib
 
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
-
-import joblib
-
-mlflow.set_experiment("Telco_Churn_Basic")
 
 mlflow.sklearn.autolog()
 
@@ -24,29 +21,32 @@ X_train, X_test, y_train, y_test = train_test_split(
     random_state=42
 )
 
-with mlflow.start_run():
+model = LogisticRegression(
+    max_iter=1000
+)
 
-    model = LogisticRegression(
-        max_iter=1000
-    )
+model.fit(
+    X_train,
+    y_train
+)
 
-    model.fit(X_train, y_train)
+y_pred = model.predict(
+    X_test
+)
 
-    y_pred = model.predict(X_test)
+accuracy = accuracy_score(
+    y_test,
+    y_pred
+)
 
-    accuracy = accuracy_score(
-        y_test,
-        y_pred
-    )
+mlflow.log_metric(
+    "accuracy",
+    accuracy
+)
 
-    mlflow.log_metric(
-        "accuracy",
-        accuracy
-    )
-
-    print(
-        f"Accuracy: {accuracy:.4f}"
-    )
+print(
+    f"Accuracy: {accuracy:.4f}"
+)
 
 joblib.dump(
     model,
